@@ -1,0 +1,122 @@
+--// Ключ-система PahTeT key Sistem
+local correctKey = "7HRvQl0enEctT[SG]"
+
+-- Центр экрана (1920x1080) + подъем на 50 пикселей
+local screenSize = Vector2.new(1920, 1080)
+local guiSize = Vector2.new(550, 376)
+local centerPosition = Vector2.new(
+    (screenSize.X - guiSize.X) / 2,
+    (screenSize.Y - guiSize.Y) / 2 - 50
+)
+
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Интерфейс ключа
+local keyGui = Instance.new("ScreenGui", playerGui)
+keyGui.Name = "PahTeT_Key_System"
+keyGui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame", keyGui)
+frame.Size = UDim2.new(0, 350, 0, 200)
+frame.Position = UDim2.new(0.5, -175, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+
+-- Закрыть кнопку (крестик)
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.Text = "X"
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 14
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeButton.BorderSizePixel = 0
+
+closeButton.MouseButton1Click:Connect(function()
+    keyGui:Destroy()
+end)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.Text = "PahTeT key Sistem"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+
+local textbox = Instance.new("TextBox", frame)
+textbox.Size = UDim2.new(1, -40, 0, 40)
+textbox.Position = UDim2.new(0, 20, 0, 40)
+textbox.PlaceholderText = "Enter key here..."
+textbox.Text = ""
+textbox.Font = Enum.Font.Gotham
+textbox.TextSize = 18
+textbox.TextColor3 = Color3.new(1,1,1)
+textbox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+textbox.BorderSizePixel = 0
+textbox.ClearTextOnFocus = false
+
+local submitButton = Instance.new("TextButton", frame)
+submitButton.Size = UDim2.new(1, -40, 0, 35)
+submitButton.Position = UDim2.new(0, 20, 0, 90)
+submitButton.Text = "Submit"
+submitButton.Font = Enum.Font.GothamBold
+submitButton.TextSize = 18
+submitButton.TextColor3 = Color3.new(1,1,1)
+submitButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+submitButton.BorderSizePixel = 0
+
+local statusLabel = Instance.new("TextLabel", frame)
+statusLabel.Size = UDim2.new(1, 0, 0, 20)
+statusLabel.Position = UDim2.new(0, 0, 1, -20)
+statusLabel.Text = ""
+statusLabel.TextColor3 = Color3.new(1, 0, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextScaled = true
+
+-- Кнопка Get Key (копирует Discord)
+local discordButton = Instance.new("TextButton", frame)
+discordButton.Size = UDim2.new(1, -40, 0, 30)
+discordButton.Position = UDim2.new(0, 20, 0, 135)
+discordButton.Text = "Get Key"
+discordButton.Font = Enum.Font.Gotham
+discordButton.TextSize = 14
+discordButton.TextColor3 = Color3.new(1,1,1)
+discordButton.BackgroundColor3 = Color3.fromRGB(114, 137, 218)
+discordButton.BorderSizePixel = 0
+
+discordButton.MouseButton1Click:Connect(function()
+    setclipboard("https://discord.gg/ttQMyKvKt6")
+    discordButton.Text = "Copied!"
+    wait(1.5)
+    discordButton.Text = "Get Key"
+end)
+
+-- Проверка ключа
+submitButton.MouseButton1Click:Connect(function()
+    if textbox.Text == correctKey then
+        keyGui:Destroy()
+
+        -- Загрузка UI после прохождения ключа
+        local uiLoader = loadstring(game:HttpGet('https://raw.githubusercontent.com/topitbopit/dollarware/main/library.lua'))
+        local ui = uiLoader({
+            theme = 'cherry'
+        })
+
+        local window = ui.newWindow({
+            text = 'PahTeT | hub',
+            resize = true,
+            size = guiSize,
+            position = centerPosition
+        })
+
+        local menu = window:addMenu({ text = 'Main' })
+        local section = menu:addSection({ text = 'Access Granted' })
+        section:addLabel({ text = 'Welcome to PahTeT hub!' })
+    else
+        statusLabel.Text = "Invalid key!"
+    end
+end) 
