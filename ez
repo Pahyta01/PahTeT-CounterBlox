@@ -1,20 +1,20 @@
---// Ключ-система PahTeT key Sistem
+--===[ НАСТРОЙКИ ]===--
 local correctKey = "7HRvQl0enEctT[SG]"
 
--- Центр экрана (1920x1080) + подъем на 50 пикселей
-local screenSize = Vector2.new(1920, 1080)
+-- Центр экрана
+local screenSize = workspace.CurrentCamera.ViewportSize
 local guiSize = Vector2.new(550, 376)
 local centerPosition = Vector2.new(
     (screenSize.X - guiSize.X) / 2,
-    (screenSize.Y - guiSize.Y) / 2 - 50
+    (screenSize.Y - guiSize.Y) / 2
 )
 
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Интерфейс ключа
+--===[ UI ключа ]===--
 local keyGui = Instance.new("ScreenGui", playerGui)
-keyGui.Name = "PahTeT_Key_System"
+keyGui.Name = "KeySystem"
 keyGui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", keyGui)
@@ -23,25 +23,10 @@ frame.Position = UDim2.new(0.5, -175, 0.5, -100)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 
--- Закрыть кнопку (крестик)
-local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -35, 0, 5)
-closeButton.Text = "X"
-closeButton.Font = Enum.Font.GothamBold
-closeButton.TextSize = 14
-closeButton.TextColor3 = Color3.new(1, 1, 1)
-closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-closeButton.BorderSizePixel = 0
-
-closeButton.MouseButton1Click:Connect(function()
-    keyGui:Destroy()
-end)
-
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
-title.Text = "PahTeT key Sistem"
+title.Text = "PahTeT Key System"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.TextColor3 = Color3.new(1, 1, 1)
@@ -77,7 +62,6 @@ statusLabel.TextColor3 = Color3.new(1, 0, 0)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextScaled = true
 
--- Кнопка Get Key (копирует Discord)
 local discordButton = Instance.new("TextButton", frame)
 discordButton.Size = UDim2.new(1, -40, 0, 30)
 discordButton.Position = UDim2.new(0, 20, 0, 135)
@@ -91,20 +75,20 @@ discordButton.BorderSizePixel = 0
 discordButton.MouseButton1Click:Connect(function()
     setclipboard("https://discord.gg/ttQMyKvKt6")
     discordButton.Text = "Copied!"
-    wait(1.5)
+    task.wait(1.5)
     discordButton.Text = "Get Key"
 end)
 
--- Проверка ключа
+--===[ Проверка ключа и запуск GUI ]===--
 submitButton.MouseButton1Click:Connect(function()
     if textbox.Text == correctKey then
         keyGui:Destroy()
 
-        -- Загрузка UI после прохождения ключа
+        --===[ ЗАГРУЗКА GUI ]===--
         local uiLoader = loadstring(game:HttpGet('https://raw.githubusercontent.com/topitbopit/dollarware/main/library.lua'))
-        local ui = uiLoader({
-            theme = 'cherry'
-        })
+        local ui = uiLoader()
+
+        ui.autoDisableToggles = true
 
         local window = ui.newWindow({
             text = 'PahTeT | hub',
@@ -113,10 +97,107 @@ submitButton.MouseButton1Click:Connect(function()
             position = centerPosition
         })
 
-        local menu = window:addMenu({ text = 'Main' })
-        local section = menu:addSection({ text = 'Access Granted' })
-        section:addLabel({ text = 'Welcome to PahTeT hub!' })
+        -- Главное меню
+        local mainMenu = window:addMenu({ text = 'Main' })
+
+        -- Создаем две секции: Legit и Rage
+        local legitSection = mainMenu:addSection({
+            text = 'Legit',
+            side = 'left'
+        })
+
+        local rageSection = mainMenu:addSection({
+            text = 'Rage',
+            side = 'right'
+        })
+
+        -- В Legit добавляем Аимбот
+        local aimbotEnabled = false
+        local aimbotRadius = 50
+        local aimbotFOVOutline = false
+
+        legitSection:addToggle({
+            text = "Aimbot",
+            state = false
+        }):bindToEvent("onToggle", function(state)
+            aimbotEnabled = state
+            print("Aimbot toggled:", state)
+        end)
+
+        legitSection:addSlider({
+            text = "Aimbot Radius",
+            min = 1,
+            max = 100,
+            step = 1,
+            val = aimbotRadius
+        }, function(value)
+            aimbotRadius = value
+            if aimbotEnabled then
+                print("Aimbot radius changed to:", value)
+            end
+        end)
+
+        legitSection:addToggle({
+            text = "FOV Outline",
+            state = false
+        }):bindToEvent("onToggle", function(state)
+            aimbotFOVOutline = state
+            print("FOV Outline toggled:", state)
+        end)
+
+        -- Visuals меню
+        local visualsMenu = window:addMenu({ text = 'Visuals' })
+
+        local sectionVisualsLeft = visualsMenu:addSection({
+            text = 'Visual Settings',
+            side = 'left'
+        })
+
+        sectionVisualsLeft:addToggle({
+            text = 'WallHack',
+            state = false
+        }):bindToEvent('onToggle', function(state)
+            print("WallHack toggled:", state)
+            -- Тут можешь вставить ESP или WallHack
+        end)
+
+        local sectionVisualsRight = visualsMenu:addSection({
+            text = 'Other Settings',
+            side = 'right'
+        })
+
+        local brightnessEnabled = false
+        local brightnessLevel = 5
+
+        local brightnessToggle = sectionVisualsRight:addToggle({
+            text = 'Enable Brightness',
+            state = false
+        })
+
+        local brightnessSlider = sectionVisualsRight:addSlider({
+            text = 'Brightness Level',
+            min = 1,
+            max = 10,
+            step = 1,
+            val = brightnessLevel
+        }, function(value)
+            brightnessLevel = value
+            if brightnessEnabled then
+                game.Lighting.Brightness = brightnessLevel
+            end
+        end)
+
+        brightnessToggle:bindToEvent('onToggle', function(state)
+            brightnessEnabled = state
+            if state then
+                game.Lighting.Brightness = brightnessLevel
+            else
+                game.Lighting.Brightness = 1 -- Сброс по умолчанию
+            end
+        end)
+
     else
         statusLabel.Text = "Invalid key!"
     end
-end) 
+end)
+
